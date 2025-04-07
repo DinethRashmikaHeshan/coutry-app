@@ -7,6 +7,7 @@ import com.country.app.service.ApiKeyService;
 import com.country.app.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,15 @@ public class CountryController {
 
     private final CountryService countryService;
     private final ApiKeyService apiKeyService;
+
+    @GetMapping("/web")
+    public String getCountryByName(@RequestParam(required = false) String name, Model model) {
+        if (name != null && !name.isEmpty()) {
+            CountryDTO country = countryService.getCountryByName(name).block(); // Blocking for simplicity
+            model.addAttribute("country", country);
+        }
+        return "countries";
+    }
 
     @GetMapping
     public ResponseEntity<Flux<CountryDTO>> getAllCountries(HttpServletRequest request) {
